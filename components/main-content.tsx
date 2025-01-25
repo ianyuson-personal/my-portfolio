@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import Profile from "./sections/profile"
-import WorkExperience from "./sections/work-experience"
-import Skills from "./sections/skills"
-import Certifications from "./sections/certifications"
-import Projects from "./sections/projects"
-import Education from "./sections/education"
-import Languages from "./sections/languages"
-import References from "./sections/references"
+import { motion, AnimatePresence } from "framer-motion";
+import Profile from "./sections/profile";
+import WorkExperience from "./sections/work-experience";
+import Skills from "./sections/skills";
+import Certifications from "./sections/certifications";
+import Projects from "./sections/projects";
+import Education from "./sections/education";
+import Languages from "./sections/languages";
+import References from "./sections/references";
 
 const contentVariants = {
   initial: {
@@ -31,31 +31,31 @@ const contentVariants = {
       ease: [0.23, 1, 0.32, 1],
     },
   },
-}
+};
 
 export default function MainContent({ activeSection }) {
   const renderContent = () => {
     switch (activeSection) {
       case "profile":
-        return <Profile />
+        return <Profile />;
       case "work-experience":
-        return <WorkExperience />
+        return <WorkExperience />;
       case "skills":
-        return <Skills />
+        return <Skills />;
       case "certifications":
-        return <Certifications />
+        return <Certifications />;
       case "projects":
-        return <Projects />
+        return <Projects />;
       case "education":
-        return <Education />
+        return <Education />;
       case "languages":
-        return <Languages />
+        return <Languages />;
       case "references":
-        return <References />
+        return <References />;
       default:
-        return <Profile />
+        return <Profile />;
     }
-  }
+  };
 
   return (
     <div className="relative">
@@ -73,6 +73,5 @@ export default function MainContent({ activeSection }) {
         </motion.div>
       </AnimatePresence>
     </div>
-  )
+  );
 }
-

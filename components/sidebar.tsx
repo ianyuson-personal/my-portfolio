@@ -1,10 +1,18 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Facebook, Instagram, Github, X } from "lucide-react"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Facebook, Instagram, Github, X } from "lucide-react";
 
-const navItems = [
+import type { Profile, SocialLink } from "@/types/profile";
+import type { SidebarProps } from "@/types/components";
+
+interface NavItem {
+  title: string;
+  key: string;
+  subItems?: NavItem[]; // Optional subItems
+}
+const navItems: (NavItem & { subItems?: NavItem[] })[] = [
   { title: "Profile", key: "profile" },
   { title: "Skills", key: "skills" },
   { title: "Work Experience", key: "work-experience" },
@@ -13,83 +21,146 @@ const navItems = [
   { title: "Certifications", key: "certifications" },
   { title: "Languages", key: "languages" },
   { title: "References", key: "references" },
-]
+];
 
-const socialLinks = [
-  { icon: Facebook, href: "https://facebook.com/yourusername" },
-  { icon: Instagram, href: "https://instagram.com/yourusername" },
-  { icon: Github, href: "https://github.com/yourusername" },
-]
+export default function Sidebar({
+  activeSection,
+  setActiveSection,
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: SidebarProps) {
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null); // Type here as string | null
+  const [expandedItems, setExpandedItems] = useState<string[]>([]); // Type here as string[]
 
-export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen, setIsSidebarOpen }) {
-  const [hoveredItem, setHoveredItem] = useState(null)
-  const [expandedItems, setExpandedItems] = useState([])
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]); // Define type here
+  const [loading, setLoading] = useState(true);
 
-  const toggleExpanded = (key) => {
-    setExpandedItems((prev) => (prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key]))
-  }
+  useEffect(() => {
+    async function fetchProfiles() {
+      try {
+        const response = await fetch("/api/supabase/profile");
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        setProfiles(data.profiles);
+
+        // Extract and parse the social_links field from the first profile
+        if (data.profiles && data.profiles.length > 0) {
+          const profile = data.profiles[0];
+
+          // Ensure social_links is an object (if it's a string, parse it)
+          const socialLinksData =
+            typeof profile.social_links === "string"
+              ? JSON.parse(profile.social_links) // Parse the JSON string if it's a string
+              : profile.social_links; // Directly use the object if it's already an object
+
+          // Create an array of social links dynamically
+          const links: SocialLink[] = [
+            { icon: Facebook, href: socialLinksData.facebook || "" },
+            { icon: Instagram, href: socialLinksData.instagram || "" },
+            { icon: Github, href: socialLinksData.github || "" },
+          ];
+
+          setSocialLinks(links); // Update state with the parsed social links
+        }
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProfiles();
+  }, []);
+
+  if (loading) return <p>Loading profiles...</p>;
+
+  // Define the type for the 'key' parameter (assuming it's a string, you can adjust if necessary)
+  const toggleExpanded = (key: string) => {
+    setExpandedItems((prev: string[]) => {
+      // Check if the key exists in the array, and add/remove it accordingly
+      if (prev.includes(key)) {
+        return prev.filter((item) => item !== key); // Remove the key
+      } else {
+        return [...prev, key]; // Add the key
+      }
+    });
+  };
 
   const sidebarContent = (
     <>
-      <div className="text-center mb-8">
-        <motion.div
-          className="w-32 h-32 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center"
-          animate={{
-            scale: [1, 1.05, 1],
-            transition: {
-              duration: 2,
-              ease: "easeInOut",
-              repeat: Number.POSITIVE_INFINITY,
-              repeatType: "reverse",
-            },
-          }}
-        >
-          <span className="text-4xl font-bold text-primary">IJY</span>
-        </motion.div>
-        <motion.h2
-          className="text-2xl lg:text-3xl font-bold text-primary mb-2"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          Ian Jay D. Yuson
-        </motion.h2>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="space-y-1"
-        >
-          <a
-            href="mailto:contact@example.com"
-            className="text-sm text-primary hover:text-primary/80 transition-colors block"
+      {profiles.map((profile) => (
+        <div key={profile.id} className="text-center mb-8">
+          <motion.div
+            className="w-40 h-40 mx-auto mb-4 rounded-full overflow-hidden" // Added overflow-hidden for the circular effect
+            animate={{
+              scale: [1, 1.05, 1],
+              transition: {
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "reverse",
+              },
+            }}
           >
-            contact@example.com
-          </a>
-          <a href="tel:+1234567890" className="text-sm text-primary hover:text-primary/80 transition-colors block">
-            +1 (234) 567-890
-          </a>
-          <div className="flex justify-center space-x-4 mt-2">
-            {socialLinks.map((link, index) => (
-              <a
-                key={index}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary/80 transition-colors"
-              >
-                <link.icon size={20} />
-              </a>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+            <img
+              src={profile.profile_picture || "/path/to/default/image.jpg"} // Use the profile picture or fallback to a default image
+              alt="Profile"
+              className="w-full h-full object-cover" // Ensure the image covers the circle properly
+            />
+          </motion.div>
+          <motion.h2
+            className="text-2xl lg:text-3xl font-bold text-primary mb-2"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            {profile.name}
+          </motion.h2>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="space-y-1"
+          >
+            <a
+              href="mailto:contact@example.com"
+              className="text-sm text-primary hover:text-primary/80 transition-colors block"
+            >
+              {profile.email}
+            </a>
+            <a
+              href="tel:+1234567890"
+              className="text-sm text-primary hover:text-primary/80 transition-colors block"
+            >
+              {profile.phone}
+            </a>
+            <div className="flex justify-center space-x-4 mt-2">
+              {socialLinks.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary/80 transition-colors"
+                >
+                  <link.icon size={20} />
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      ))}
 
       <nav className="flex-1">
         <ul className="space-y-2">
           {navItems.map((item) => {
-            const isActive = activeSection === item.key
-            const isExpanded = expandedItems.includes(item.key)
+            const isActive = activeSection === item.key;
+            const isExpanded = expandedItems.includes(item.key);
             return (
               <motion.li
                 key={item.key}
@@ -100,21 +171,30 @@ export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen
                 <button
                   onClick={() => {
                     if (item.subItems) {
-                      toggleExpanded(item.key)
+                      toggleExpanded(item.key);
                     } else {
-                      setActiveSection(item.key)
-                      setIsSidebarOpen(false)
+                      setActiveSection(item.key);
+                      setIsSidebarOpen(false);
                     }
                   }}
                   className={`w-full text-left py-2 px-4 relative group ${
                     isActive ? "text-primary" : "text-foreground/80"
                   }`}
                 >
-                  <span className="relative z-10 text-sm font-medium" data-text={item.title}>
+                  <span
+                    className="relative z-10 text-sm font-medium"
+                    data-text={item.title}
+                  >
                     {item.title}
                   </span>
                   {item.subItems && (
-                    <span className={`ml-2 transition-transform ${isExpanded ? "rotate-180" : ""}`}>▼</span>
+                    <span
+                      className={`ml-2 transition-transform ${
+                        isExpanded ? "rotate-180" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
                   )}
                   <AnimatePresence>
                     {(hoveredItem === item.key || isActive) && (
@@ -165,11 +245,13 @@ export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen
                       >
                         <button
                           onClick={() => {
-                            setActiveSection(subItem.key)
-                            setIsSidebarOpen(false)
+                            setActiveSection(subItem.key);
+                            setIsSidebarOpen(false);
                           }}
                           className={`w-full text-left py-1 px-4 text-sm ${
-                            activeSection === subItem.key ? "text-primary" : "text-foreground/70"
+                            activeSection === subItem.key
+                              ? "text-primary"
+                              : "text-foreground/70"
                           }`}
                         >
                           {subItem.title}
@@ -179,7 +261,7 @@ export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen
                   </ul>
                 )}
               </motion.li>
-            )
+            );
           })}
         </ul>
       </nav>
@@ -188,7 +270,7 @@ export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen
         © 2024 Cybersecurity Portfolio
       </div>
     </>
-  )
+  );
 
   return (
     <>
@@ -208,7 +290,10 @@ export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen
                   className="fixed inset-y-0 left-0 w-[280px] bg-background shadow-lg z-50 p-6"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button onClick={() => setIsSidebarOpen(false)} className="absolute top-4 right-4 text-primary">
+                  <button
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="absolute top-4 right-4 text-primary"
+                  >
                     <X size={24} />
                   </button>
                   {sidebarContent}
@@ -220,6 +305,5 @@ export default function Sidebar({ activeSection, setActiveSection, isSidebarOpen
         <div className="hidden lg:block">{sidebarContent}</div>
       </aside>
     </>
-  )
+  );
 }
-
