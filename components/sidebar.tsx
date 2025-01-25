@@ -6,6 +6,7 @@ import { Facebook, Instagram, Github, X } from "lucide-react";
 
 import type { Profile, SocialLink } from "@/types/profile";
 import type { SidebarProps } from "@/types/components";
+import { LoadingContent } from "./ui/loading-content";
 
 interface NavItem {
   title: string;
@@ -77,7 +78,12 @@ export default function Sidebar({
     fetchProfiles();
   }, []);
 
-  if (loading) return <p>Loading profiles...</p>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-64">
+        <LoadingContent size="sm" />
+      </div>
+    );
 
   // Define the type for the 'key' parameter (assuming it's a string, you can adjust if necessary)
   const toggleExpanded = (key: string) => {

@@ -3,60 +3,41 @@
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-interface SpinnerProps {
+interface LoadingScreenProps {
   size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export function LoadingContent({ size = "md", className }: SpinnerProps) {
+export function LoadingContent({ size = "md", className }: LoadingScreenProps) {
   const sizeClasses = {
-    sm: "w-6 h-6",
-    md: "w-10 h-10",
-    lg: "w-16 h-16",
+    sm: "w-16 h-16",
+    md: "w-24 h-24",
+    lg: "w-32 h-32",
   };
 
   const circleVariants = {
-    start: { opacity: 0.4, rotate: 0 },
-    end: { opacity: 1, rotate: 360 },
+    initial: { scale: 0.8, opacity: 0.3 },
+    animate: {
+      scale: [0.8, 1.2, 0.8],
+      opacity: [0.3, 1, 0.3],
+      transition: {
+        duration: 1.5,
+        repeat: Number.POSITIVE_INFINITY,
+        ease: "easeInOut",
+      },
+    },
   };
 
   return (
-    <div className={cn("relative", sizeClasses[size], className)}>
-      {[...Array(3)].map((_, index) => (
-        <motion.div
-          key={index}
-          className={cn(
-            "absolute inset-0 rounded-full border-2 border-primary dark:border-primary-foreground",
-            {
-              "border-[1.5px]": size === "sm",
-              "border-2": size === "md",
-              "border-3": size === "lg",
-            }
-          )}
-          style={{
-            borderTopColor: "transparent",
-            borderLeftColor: "transparent",
-          }}
-          initial="start"
-          animate="end"
-          variants={circleVariants}
-          transition={{
-            duration: 1.5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "linear",
-            delay: index * 0.2,
-          }}
-        />
-      ))}
-      <div
+    <div className={cn("flex items-center justify-center", className)}>
+      <motion.div
         className={cn(
-          "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-background dark:bg-background",
-          {
-            "w-3 h-3": size === "sm",
-            "w-5 h-5": size === "md",
-            "w-8 h-8": size === "lg",
-          }
+          "rounded-full border-4 border-primary",
+          sizeClasses[size]
         )}
+        initial="initial"
+        animate="animate"
+        variants={circleVariants}
       />
     </div>
   );
