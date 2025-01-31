@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Github, ExternalLink, Calendar } from "lucide-react";
 import { format, parseISO } from "date-fns";
@@ -12,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ProjectModal } from "../project-modal";
 
 const projects: Project[] = [
   {
@@ -22,6 +24,8 @@ const projects: Project[] = [
     github: "https://github.com/username/project1",
     live: "https://project1.demo",
     date: "2023-11-15",
+    details:
+      "This dashboard provides real-time monitoring of security events, incident response workflows, and automated alerting capabilities. Built with modern web technologies and scalable architecture to handle large volumes of security data.",
   },
   {
     title: "Threat Intelligence Platform",
@@ -31,6 +35,8 @@ const projects: Project[] = [
     github: "https://github.com/username/project2",
     live: "https://project2.demo",
     date: "2023-09-01",
+    details:
+      "Leveraging machine learning algorithms to analyze and categorize security threats, this platform automates the collection and processing of threat intelligence data from multiple sources.",
   },
   {
     title: "Security Compliance Tool",
@@ -40,6 +46,8 @@ const projects: Project[] = [
     github: "https://github.com/username/project3",
     live: "https://project3.demo",
     date: "2023-06-20",
+    details:
+      "This tool streamlines the compliance process by automatically checking systems against various security standards and generating detailed reports for audit purposes.",
   },
 ];
 
@@ -59,6 +67,8 @@ const item = {
 };
 
 export default function Projects() {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
   // Sort projects by date (most recent first)
   const sortedProjects = [...projects].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -82,7 +92,7 @@ export default function Projects() {
         className="relative"
       >
         {/* Vertical line */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-primary/30 transform -translate-x-1/2" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-primary/30 transform -translate-x-1/2 hidden md:block" />
 
         {sortedProjects.map((project, index) => (
           <motion.div
@@ -90,17 +100,18 @@ export default function Projects() {
             variants={item}
             transition={{ duration: 0.5 }}
             className={`flex items-center mb-12 ${
-              index % 2 === 0 ? "flex-row-reverse" : "flex-row"
-            }`}
+              index % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
+            } flex-col`}
           >
             {/* Timeline node */}
-            <div className="w-4 h-4 bg-primary rounded-full absolute left-1/2 transform -translate-x-1/2 z-10" />
+            <div className="w-4 h-4 bg-primary rounded-full absolute left-1/2 transform -translate-x-1/2 z-10 hidden md:block" />
 
             {/* Project card */}
             <Card
-              className={`w-[calc(50%-2rem)] ${
-                index % 2 === 0 ? "mr-8" : "ml-8"
-              }`}
+              className={`w-full md:w-[calc(50%-2rem)] ${
+                index % 2 === 0 ? "md:mr-8" : "md:ml-8"
+              } cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-primary/30`}
+              onClick={() => setSelectedProject(project)}
             >
               <CardHeader>
                 <CardTitle>{project.title}</CardTitle>
@@ -126,6 +137,7 @@ export default function Projects() {
                   rel="noopener noreferrer"
                   className="text-primary hover:text-primary/80 transition-colors"
                   aria-label={`View ${project.title} on GitHub`}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <Github className="w-5 h-5" />
                 </a>
@@ -135,6 +147,7 @@ export default function Projects() {
                   rel="noopener noreferrer"
                   className="text-primary hover:text-primary/80 transition-colors"
                   aria-label={`View live demo of ${project.title}`}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <ExternalLink className="w-5 h-5" />
                 </a>
@@ -143,6 +156,12 @@ export default function Projects() {
           </motion.div>
         ))}
       </motion.div>
+
+      <ProjectModal
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+        project={selectedProject}
+      />
     </div>
   );
 }
