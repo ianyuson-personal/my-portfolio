@@ -12,8 +12,8 @@ import {
   Zap,
   Book,
 } from "lucide-react";
-import { SkillCard } from "./skill-card";
-import { SkillModal } from "./skill-modal";
+import { SkillCard } from "../skill-card";
+import { SkillModal } from "../skill-modal";
 
 const container = {
   hidden: { opacity: 0 },
@@ -119,13 +119,30 @@ const softSkills = [
     },
   },
 ];
-
+interface Skill {
+  title: string;
+  icon: React.ElementType;
+  description: string;
+  details: {
+    image: string;
+    content: string;
+  };
+}
 export default function Skills() {
   const [activeTab, setActiveTab] = useState("technical");
-  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [selectedSkill, setSelectedSkill] = useState<{
+    title: string;
+    icon: React.ElementType;
+    description: string;
+    details: {
+      image: string;
+      content: string;
+    };
+  } | null>(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSkillClick = (skill) => {
+  const handleSkillClick = (skill: Skill) => {
     setSelectedSkill(skill);
     setIsModalOpen(true);
   };

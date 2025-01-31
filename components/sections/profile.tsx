@@ -4,8 +4,50 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/profile";
 import { LoadingContent } from "@/components/ui/loading-content";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Code, Trophy, Network } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Shield, Code, Trophy, Network, Quote } from "lucide-react";
+import Image from "next/image";
+
+const skillItems = [
+  {
+    icon: Shield,
+    title: "Digital Forensics",
+    description: "Specializing in cybercrime investigation and data recovery",
+  },
+  {
+    icon: Code,
+    title: "Web Security",
+    description: "Proficient in identifying and mitigating web vulnerabilities",
+  },
+  {
+    icon: Trophy,
+    title: "CTF Competitions",
+    description: "Experienced in Capture The Flag cybersecurity challenges",
+  },
+  {
+    icon: Network,
+    title: "Network Security",
+    description: "Strong foundation in Cisco networking concepts",
+  },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+  },
+};
 
 export default function Profile() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -40,149 +82,149 @@ export default function Profile() {
     );
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-16">
+    <div className="container mx-auto px-4 py-12 space-y-24">
       {profiles.map((profile) => (
         <motion.div
           key={profile.id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
         >
           {/* Header Section */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center space-y-6 mb-12"
+            className="text-center space-y-8 mb-16"
+            variants={itemVariants}
           >
-            <motion.h1
-              className="text-5xl font-bold text-primary"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 20,
-                delay: 0.2,
-              }}
-            >
-              {profile.name}
-            </motion.h1>
-            <motion.h2
-              className="text-2xl text-primary/80"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              Cybersecurity Expert
-            </motion.h2>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="max-w-4xl mx-auto bg-secondary/30 rounded-lg p-6 shadow-lg"
+              className="relative w-48 h-48 mx-auto mb-8"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="space-y-4">
-                <p className="text-lg leading-relaxed text-center text-foreground">
-                  I am a Computer Science student specializing in Digital
-                  Forensics with a strong passion for cybersecurity.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="bg-background/50 p-4 rounded-md">
-                    <h4 className="font-semibold text-primary mb-2">
-                      Hands-on Experience
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Trend Micro's Capture the Flag</li>
-                      <li>PicoCTF competitions</li>
-                      <li>Creating virtual lab environments</li>
-                      <li>PortSwigger web security course</li>
-                    </ul>
-                  </div>
-                  <div className="bg-background/50 p-4 rounded-md">
-                    <h4 className="font-semibold text-primary mb-2">
-                      Key Skills
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Digital Forensics</li>
-                      <li>Web Security</li>
-                      <li>Cisco networking concepts</li>
-                      <li>Problem-solving mindset</li>
-                    </ul>
-                  </div>
-                </div>
-                <p className="text-center text-foreground/80 italic mt-4">
-                  Eager to apply my skills and knowledge to strengthen system
-                  security.
-                </p>
-              </div>
+              <Image
+                src={profile.profile_picture || "/placeholder-avatar.jpg"}
+                alt={profile.name}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-full shadow-lg"
+              />
             </motion.div>
+            <h1 className="text-5xl font-bold text-primary">{profile.name}</h1>
+            <h2 className="text-2xl text-primary/80">Cybersecurity Expert</h2>
           </motion.div>
-          {/* Skills Section
+
+          {/* About Section */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="mb-12"
+            className="max-w-4xl mx-auto bg-secondary/30 rounded-lg p-8 shadow-lg backdrop-blur-sm"
+            variants={itemVariants}
           >
-            <h3 className="text-2xl font-semibold text-primary text-center mb-6">
+            <p className="text-lg leading-relaxed text-center text-foreground mb-6">
+              I am a Computer Science student specializing in Digital Forensics
+              with a strong passion for cybersecurity. My goal is to leverage
+              cutting-edge technologies to enhance digital security and protect
+              against evolving cyber threats.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+              <div className="bg-background/50 p-6 rounded-md shadow-inner">
+                <h4 className="font-semibold text-primary mb-4 text-lg">
+                  Hands-on Experience
+                </h4>
+                <ul className="space-y-2 text-sm">
+                  {[
+                    "Trend Micro's Capture the Flag",
+                    "PicoCTF competitions",
+                    "Creating virtual lab environments",
+                    "PortSwigger web security course",
+                  ].map((item, index) => (
+                    <motion.li
+                      key={index}
+                      className="flex items-center space-x-2"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Shield className="w-4 h-4 text-primary" />
+                      <span>{item}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-background/50 p-6 rounded-md shadow-inner">
+                <h4 className="font-semibold text-primary mb-4 text-lg">
+                  Key Skills
+                </h4>
+                <ul className="space-y-2 text-sm">
+                  {[
+                    "Digital Forensics",
+                    "Web Security",
+                    "Cisco networking concepts",
+                    "Problem-solving mindset",
+                  ].map((item, index) => (
+                    <motion.li
+                      key={index}
+                      className="flex items-center space-x-2"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Code className="w-4 h-4 text-primary" />
+                      <span>{item}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Quote Section */}
+          <motion.div
+            className="my-16 max-w-4xl mx-auto text-center"
+            variants={itemVariants}
+          >
+            <Quote className="w-12 h-12 text-primary mx-auto mb-4" />
+            <blockquote className="text-2xl font-semibold text-primary/80 italic">
+              "Embrace AI as a tool for innovation and progress. Those who adapt
+              and integrate AI will lead; those who resist may find themselves
+              left behind."
+            </blockquote>
+            <cite className="block mt-4 text-lg text-foreground/80">
+              - Ian Jay Yuson
+            </cite>
+          </motion.div>
+
+          {/* Skills Section */}
+          <motion.div className="mb-16" variants={itemVariants}>
+            <h3 className="text-3xl font-semibold text-primary text-center mb-8">
               Skills & Expertise
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                {
-                  icon: Shield,
-                  title: "Digital Forensics",
-                  description:
-                    "Specializing in cybercrime investigation and data recovery",
-                },
-                {
-                  icon: Code,
-                  title: "Web Security",
-                  description:
-                    "Proficient in identifying and mitigating web vulnerabilities",
-                },
-                {
-                  icon: Trophy,
-                  title: "CTF Competitions",
-                  description:
-                    "Experienced in Capture The Flag cybersecurity challenges",
-                },
-                {
-                  icon: Network,
-                  title: "Network Security",
-                  description: "Strong foundation in Cisco networking concepts",
-                },
-              ].map((skill, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <skill.icon className="w-6 h-6 text-primary" />
-                      <span>{skill.title}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {skill.description}
-                    </p>
-                  </CardContent>
-                </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {skillItems.map((skill, index) => (
+                <motion.div
+                  key={index}
+                  className="bg-background/50 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-sm"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <skill.icon className="w-12 h-12 text-primary mb-4" />
+                  <h4 className="text-xl font-semibold text-primary mb-2">
+                    {skill.title}
+                  </h4>
+                  <p className="text-sm text-foreground/80">
+                    {skill.description}
+                  </p>
+                </motion.div>
               ))}
             </div>
-          </motion.div> */}
+          </motion.div>
 
           {/* Featured Achievement */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            className="mb-12"
-          >
-            <h3 className="text-2xl font-semibold text-primary text-center mb-6">
+          <motion.div variants={itemVariants}>
+            <h3 className="text-3xl font-semibold text-primary text-center mb-8">
               Featured Achievement
             </h3>
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
+            <Card className="hover:shadow-xl transition-all duration-300 backdrop-blur-sm">
+              <CardContent className="p-8">
+                <Trophy className="w-16 h-16 text-primary mx-auto mb-6" />
                 <p className="text-lg leading-relaxed text-center">
                   Led the implementation of a next-generation Security
                   Operations Center (SOC), resulting in a 75% reduction in
