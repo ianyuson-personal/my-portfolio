@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Facebook, Instagram, Github, X } from "lucide-react";
 
 import type { Profile, SocialLink } from "@/types/profile";
-import type { SidebarProps } from "@/types/components";
+import type { SidebarProps, Section } from "@/types/components";
 import { LoadingContent } from "./ui/loading-content";
 
 interface NavItem {
   title: string;
-  key: string;
+  key: Section;
   subItems?: NavItem[]; // Optional subItems
 }
 const navItems: (NavItem & { subItems?: NavItem[] })[] = [
@@ -36,6 +36,10 @@ export default function Sidebar({
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]); // Define type here
   const [loading, setLoading] = useState(true);
+  // In your Sidebar component, use `NavItem.key` to update the active section
+  const handleNavItemClick = (key: Section) => {
+    setActiveSection(key); // This will now work since `key` is of type `Section`
+  };
 
   useEffect(() => {
     async function fetchProfiles() {
