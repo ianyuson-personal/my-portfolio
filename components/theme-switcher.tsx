@@ -1,13 +1,22 @@
-"use client"
+"use client";
 
-import { Moon, Sun } from "lucide-react"
-import { useEffect } from "react"
+import { Moon, Sun } from "lucide-react";
+import { useEffect } from "react";
+type Theme = "light" | "dark";
 
-export default function ThemeSwitcher({ currentTheme, setTheme }) {
+interface ThemeSwitcherProps {
+  currentTheme: Theme;
+  setTheme: (theme: Theme) => void;
+}
+
+export default function ThemeSwitcher({
+  currentTheme,
+  setTheme,
+}: ThemeSwitcherProps) {
   useEffect(() => {
     // Update the document class when theme changes
-    document.documentElement.classList.toggle("dark", currentTheme === "dark")
-  }, [currentTheme])
+    document.documentElement.classList.toggle("dark", currentTheme === "dark");
+  }, [currentTheme]);
 
   return (
     <div className="flex space-x-2">
@@ -34,6 +43,5 @@ export default function ThemeSwitcher({ currentTheme, setTheme }) {
         <Moon size={16} />
       </button>
     </div>
-  )
+  );
 }
-

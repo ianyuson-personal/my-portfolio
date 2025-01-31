@@ -33,7 +33,21 @@ const contentVariants = {
   },
 };
 
-export default function MainContent({ activeSection }) {
+type Section =
+  | "profile"
+  | "work-experience"
+  | "skills"
+  | "certifications"
+  | "projects"
+  | "education"
+  | "languages"
+  | "references";
+
+interface MainContentProps {
+  activeSection: Section;
+}
+
+export default function MainContent({ activeSection }: MainContentProps) {
   const renderContent = () => {
     switch (activeSection) {
       case "profile":

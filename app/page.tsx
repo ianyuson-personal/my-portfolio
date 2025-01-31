@@ -1,16 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import Sidebar from "@/components/sidebar";
 import MainContent from "@/components/main-content";
 import ThemeSwitcher from "@/components/theme-switcher";
 import { AnimatedBackground } from "@/components/animated-background";
 import { PortfolioDropdown } from "@/components/portfolio-dropdown";
 import { Menu } from "lucide-react";
+import type { SidebarProps } from "@/types/components";
+
+type Theme = "light" | "dark";
+
+type Section =
+  | "profile"
+  | "work-experience"
+  | "skills"
+  | "certifications"
+  | "projects"
+  | "education"
+  | "languages"
+  | "references";
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState("profile");
-  const [theme, setTheme] = useState("light");
+  const [activeSection, setActiveSection] = useState<Section>("profile");
+  const [theme, setTheme] = useState<Theme>("light");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
